@@ -1,9 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Animated, 
+  Dimensions,
+  Platform,
+  StatusBar 
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { listenToAlerts } from '../services/emergencySocket';
 import * as ttsHandler from '../utils/ttsHandler';
-import { theme } from '../../../config/theme';
+
+const { width, height } = Dimensions.get('window');
+
+// Acil durum için özel renk paleti
+const COLORS = {
+  dangerStart: '#EF4444',
+  dangerEnd: '#DC2626',
+  white: '#FFFFFF',
+  pulse: 'rgba(255, 255, 255, 0.3)',
+  shadow: 'rgba(0, 0, 0, 0.25)',
+};
 
 interface Alert {
   id: number;
@@ -14,12 +34,17 @@ interface Alert {
 
 export const EmergencyOverlay = () => {
   const [alert, setAlert] = useState<Alert | null>(null);
+  
+  // Animasyon Değerleri
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const iconShake = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const unsubscribe = listenToAlerts((payload) => {
       if (payload.active) {
         setAlert(payload);
         ttsHandler.speak(payload.message);
+        startAnimations();
       }
     });
 
@@ -29,9 +54,41 @@ export const EmergencyOverlay = () => {
     };
   }, []);
 
+  const startAnimations = () => {
+    // Nabız Animasyonu (Arka plan halkaları için)
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.2,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // İkon Sallanma Animasyonu
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(iconShake, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(iconShake, { toValue: -10, duration: 100, useNativeDriver: true }),
+        Animated.timing(iconShake, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(iconShake, { toValue: 0, duration: 100, useNativeDriver: true }),
+        Animated.delay(1000) // Her sallanmadan sonra biraz bekle
+      ])
+    ).start();
+  };
+
   const handleClose = () => {
     ttsHandler.stop();
     setAlert(null);
+    // Animasyonları sıfırla
+    pulseAnim.setValue(1);
+    iconShake.setValue(0);
   };
 
   if (!alert) {
@@ -39,16 +96,46 @@ export const EmergencyOverlay = () => {
   }
 
   return (
-    <View style={styles.overlay}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.dangerEnd} />
+      
+      {/* Arkaplan Gradient */}
+      <LinearGradient
+        colors={[COLORS.dangerStart, COLORS.dangerEnd]}
+        style={styles.background}
+      />
+
+      {/* Animasyonlu Arkaplan Halkaları */}
+      <Animated.View style={[styles.pulseCircle, { transform: [{ scale: pulseAnim }] }]} />
+      <Animated.View style={[styles.pulseCircle, { transform: [{ scale: Animated.multiply(pulseAnim, 0.8) }], opacity: 0.5 }]} />
+
       <View style={styles.content}>
-        <Ionicons name="warning" size={80} color="#FFFFFF" />
+        {/* Uyarı İkonu */}
+        <Animated.View style={{ transform: [{ translateX: iconShake }] }}>
+          <View style={styles.iconContainer}>
+            <MaterialCommunityIcons name="alert-octagon-outline" size={80} color={COLORS.dangerStart} />
+          </View>
+        </Animated.View>
 
-        <Text style={styles.title}>{alert.type}</Text>
-
+        {/* Başlık ve Mesaj */}
+        <Text style={styles.title}>ACİL DURUM!</Text>
+        <View style={styles.typeBadge}>
+          <Text style={styles.typeText}>{alert.type.toUpperCase()}</Text>
+        </View>
+        
         <Text style={styles.message}>{alert.message}</Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleClose}>
-          <Text style={styles.buttonText}>I'm Safe / Close</Text>
+        {/* Aksiyon Butonu */}
+        <TouchableOpacity 
+          style={styles.buttonContainer} 
+          onPress={handleClose}
+          activeOpacity={0.9}
+        >
+          <View style={styles.button}>
+            <MaterialCommunityIcons name="check-circle" size={28} color={COLORS.dangerStart} />
+            <Text style={styles.buttonText}>Güvendeyim / Kapat</Text>
+          </View>
+          <Text style={styles.buttonHint}>Alarmı susturmak için dokunun</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -56,41 +143,105 @@ export const EmergencyOverlay = () => {
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: theme.colors.danger,
+    zIndex: 9999,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 9999,
+    elevation: 9999, // Android için en üst katman
+  },
+  background: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  pulseCircle: {
+    position: 'absolute',
+    width: width * 1.5,
+    height: width * 1.5,
+    borderRadius: width * 0.75,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    zIndex: 1,
   },
   content: {
+    zIndex: 2,
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.xl,
+    paddingHorizontal: 30,
+    width: '100%',
+  },
+  iconContainer: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: COLORS.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 15,
   },
   title: {
     fontSize: 32,
+    fontWeight: '900',
+    color: COLORS.white,
+    marginBottom: 10,
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  typeBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
+  },
+  typeText: {
+    color: COLORS.white,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginTop: theme.spacing.l,
-    marginBottom: theme.spacing.m,
-    textAlign: 'center',
+    letterSpacing: 0.5,
   },
   message: {
-    fontSize: 18,
-    color: '#FFFFFF',
+    fontSize: 20,
+    color: COLORS.white,
     textAlign: 'center',
-    marginBottom: theme.spacing.xl,
-    lineHeight: 24,
+    marginBottom: 50,
+    lineHeight: 28,
+    fontWeight: '500',
+    opacity: 0.95,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
   },
   button: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: theme.spacing.m,
-    paddingHorizontal: theme.spacing.xl,
-    borderRadius: 8,
+    flexDirection: 'row',
+    backgroundColor: COLORS.white,
+    width: '100%',
+    paddingVertical: 20,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
   },
   buttonText: {
-    color: theme.colors.danger,
-    fontSize: 16,
-    fontWeight: '600',
+    color: COLORS.dangerStart,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  buttonHint: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 13,
+    marginTop: 12,
   },
 });

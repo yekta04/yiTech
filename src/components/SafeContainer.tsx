@@ -20,6 +20,6 @@ export const SafeContainer: React.FC<SafeContainerProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#050505',
   },
 });

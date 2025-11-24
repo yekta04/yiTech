@@ -1,12 +1,21 @@
 export const theme = {
   colors: {
-    primary: '#007AFF',
-    background: '#F2F2F7',
-    text: '#000000',
-    danger: '#FF3B30',
-    success: '#34C759',
+    background: '#050505',
+    surface: '#1A1A1A',
+    primary: '#10B981',
+    secondary: '#047857',
+    text: '#FFFFFF',
+    textSecondary: '#9CA3AF',
+    danger: '#EF4444',
+    success: '#10B981',
   },
   spacing: {
+    s: 8,
+    m: 16,
+    l: 24,
+    xl: 32,
+  },
+  borderRadius: {
     s: 8,
     m: 16,
     l: 24,
