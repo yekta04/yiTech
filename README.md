@@ -235,10 +235,10 @@ npx expo start
 
 | Rol | Email | Şifre | Açıklama |
 |-----|-------|-------|----------|
-| 👑 **Admin** | `admin@site.com` | `123456` | Tam yönetim yetkisi |
-| 🛡️ **Güvenlik** | `security@site.com` | `123456` | QR tarama ve misafir kontrolü |
-| 🧹 **Temizlik** | `cleaner@site.com` | `123456` | Görev yönetimi ve konum paylaşımı |
-| 👤 **Sakin** | `resident@site.com` | `123456` | Standart kullanıcı özellikleri |
+| 👑 **Admin** | `site@admin.com` | `123456` | Tam yönetim yetkisi |
+| 🛡️ **Güvenlik** | `guvenlik@site.com` | `123456` | QR tarama ve misafir kontrolü |
+| 🧹 **Temizlik** | `temizlik@site.com` | `123456` | Görev yönetimi ve konum paylaşımı |
+| 👤 **Sakin** | `oturan@site.com` | `123456` | Standart kullanıcı özellikleri |
 
 ---
 
@@ -476,3 +476,4 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 **Son Güncelleme:** Kasım 2024  
 **Versiyon:** 1.0.0  
 **Durum:** ✅ Production Ready
+
