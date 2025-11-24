@@ -8,6 +8,33 @@ Modern, kapsamlı ve rol tabanlı bir konut sitesi yönetim sistemi. React Nativ
 
 **Emlak Konut**, site sakinleri, yöneticiler, güvenlik görevlileri ve temizlik personeli için özel olarak tasarlanmış, tam özellikli bir site yönetim platformudur. Uygulama, rol tabanlı erişim kontrolü ile her kullanıcı tipine özel arayüzler sunar.
 
+
+### 🖼️ Uygulama Görünümleri
+
+![Ana Sayfa ve Hizmetler Ekranı](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum1.png)
+<br/>
+
+![Sakin (Resident) Dashboard ve Çöp Toplama Talebi](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum2.png)
+<br/>
+
+![Güvenlik Modülü ve QR Kod Tarama Arayüzü](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum3.png)
+<br/>
+
+![Temizlik Personeli Görev Yönetimi ve Konum Paylaşımı](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum4.png)
+<br/>
+
+![Yönetici (Admin) Kullanıcı Yönetimi Paneli](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum5.png)
+<br/>
+
+![Misafir Oluşturma ve Pazar Yeri Özellikleri](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum6.png)
+<br/>
+
+![Ortak Alan Rezervasyon Sistemi ve Takvim Görünümü](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum7.png)
+<br/>
+
+![Mali Yönetim ve Aidat Takip Ekranları](https://raw.githubusercontent.com/yekta04/yiTech/main/assets/Sunum8.png)
+<br/>
+
 ### 🎯 Temel Özellikler
 
 - ✅ **Rol Tabanlı Erişim Kontrolü** - 4 farklı kullanıcı rolü (Sakin, Admin, Güvenlik, Temizlik)
@@ -476,4 +503,5 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 **Son Güncelleme:** Kasım 2024  
 **Versiyon:** 1.0.0  
 **Durum:** ✅ Production Ready
+
 
