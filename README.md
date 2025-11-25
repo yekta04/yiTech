@@ -504,4 +504,8 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 **Versiyon:** 1.0.0  
 **Durum:** ✅ Production Ready
 
+## 🤝 Geliştiricler
+Yekta Kahriman
+ibrahim Culfa
+
 
